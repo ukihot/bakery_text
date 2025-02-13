@@ -1,5 +1,5 @@
 pub(super) mod bakery_terminal;
 
-pub(super) mod dialog;
-
 pub(super) mod bread;
+
+pub(super) mod sections;

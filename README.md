@@ -26,18 +26,18 @@ Each component has a single responsibility. Each section is dedicated to a speci
 
 | ID  | Section         | Abbreviation | Purpose                                   | Commands             | Receives from |
 | --- | --------------- | ------------ | ----------------------------------------- | -------------------- | ------------- |
-| 01  | Purchasing      | PS           | Order and manage procurement of materials | `order`              | (None)        |
-| 02  | Pantry          | PN           | Store raw materials and ingredients       | `ls`                 | PS            |
-| 03  | Mixing          | MX           | Mix ingredients to form dough             | `mx`                 | ST            |
-| 04  | Cooling         | CL           | Let dough rise / Cool baked bread         | `pf`, `cl`           | MX, SH, BK    |
-| 05  | Shaping         | SH           | Shape the dough                           | `div`, `roll`        | CL            |
-| 06  | Baking          | BK           | Bake the dough                            | `bk`                 | SH            |
-| 07  | Packaging       | PK           | Package bread for sale                    | `pack`, `label`      | CL            |
-| 08  | Quality Control | QC           | Check bread for quality                   | `inspect`, `report`  | PK            |
-| 09  | Stockroom       | ST           | Store packaged bread                      | `store`, `inv`       | QC            |
-| 10  | Sales Front     | SF           | Sell bread                                | (Observer mode only) | ST            |
-| 11  | Waste Station   | WS           | Handle waste                              | `dispose`            | (Any)         |
-| 12  | Utility         | UT           | Manage water, electricity, and gas supply | (Observer mode only) | (None)        |
+| 00  | Purchasing      | PS           | Order and manage procurement of materials | `order`              | (None)        |
+| 01  | Pantry          | PN           | Store raw materials and ingredients       |                      | PS            |
+| 02  | Mixing          | MX           | Mix ingredients to form dough             | `mx`                 | ST            |
+| 03  | Cooling         | CL           | Let dough rise / Cool baked bread         | `pf`, `cl`           | MX, SH, BK    |
+| 04  | Shaping         | SH           | Shape the dough                           | `div`, `roll`        | CL            |
+| 05  | Baking          | BK           | Bake the dough                            | `bk`                 | SH            |
+| 06  | Packaging       | PK           | Package bread for sale                    | `pack`, `label`      | CL            |
+| 07  | Quality Control | QC           | Check bread for quality                   | `inspect`, `report`  | PK            |
+| 08  | Stockroom       | ST           | Store packaged bread                      | `store`, `inv`       | QC            |
+| 09  | Sales Front     | SF           | Sell bread                                | (Observer mode only) | ST            |
+| 10  | Waste Station   | WS           | Handle waste                              | `dispose`            | (Any)         |
+| 11  | Utility         | UT           | Manage water, electricity, and gas supply | (Observer mode only) | (None)        |
 
 ### Section Descriptions
 

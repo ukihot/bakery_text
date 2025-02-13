@@ -10,13 +10,15 @@ pub enum BreadName {
 }
 
 #[derive(Debug)]
-pub enum BreadStatus {
+enum BreadStatus {
     Unfermented,
     FirstFermentationComplete,
     SecondFermentationComplete,
     BakingComplete,
     CoolingComplete,
     PackagingComplete,
+    SoldOut,
+    Spoiled,
 }
 
 #[derive(Debug, Component)]
@@ -45,6 +47,41 @@ impl Bread {
             expiration,
             is_genuine: true,
             status: BreadStatus::Unfermented,
+        }
+    }
+
+    pub fn update_status_unfermented(&mut self) {
+        self.status = BreadStatus::Unfermented;
+    }
+
+    pub fn update_status_first_fermentation_complete(&mut self) {
+        self.status = BreadStatus::FirstFermentationComplete;
+    }
+
+    pub fn update_status_second_fermentation_complete(&mut self) {
+        self.status = BreadStatus::SecondFermentationComplete;
+    }
+
+    pub fn update_status_baking_complete(&mut self) {
+        self.status = BreadStatus::BakingComplete;
+    }
+
+    pub fn update_status_cooling_complete(&mut self) {
+        self.status = BreadStatus::CoolingComplete;
+    }
+
+    pub fn update_status_packaging_complete(&mut self) {
+        self.status = BreadStatus::PackagingComplete;
+    }
+
+    pub fn update_status_sold_out(&mut self) {
+        self.status = BreadStatus::SoldOut;
+    }
+
+    pub fn progress_spoilage(&mut self) {
+        self.expiration = self.expiration.saturating_sub(1);
+        if self.expiration == 0 {
+            self.status = BreadStatus::Spoiled;
         }
     }
 }
