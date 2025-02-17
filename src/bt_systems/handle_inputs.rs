@@ -9,7 +9,17 @@ use bevy::{
 use crate::{BakeryTerminal, FocusedSection, OperatorMode};
 
 #[derive(Event)]
-pub struct Emitation(pub String);
+pub struct Emitation(pub String, pub u8);
+
+impl Emitation {
+    pub fn split_command(&self) -> (&str, Option<&str>, Option<&str>) {
+        let parts: Vec<&str> = self.0.split('_').collect();
+        let command = parts.first().unwrap_or(&"");
+        let opt1 = parts.get(1).copied();
+        let opt2 = parts.get(2).copied();
+        (command, opt1, opt2)
+    }
+}
 
 /// Keyboard input handling (updates only the focused BakeryTerminal)
 pub fn handle_text_input(
@@ -20,28 +30,26 @@ pub fn handle_text_input(
 ) {
     sections
         .iter_mut()
-        .filter(|terminal| terminal.id == focused_section.0)
-        .for_each(|mut bakery_terminal| {
+        .filter(|term| term.id == focused_section.0)
+        .for_each(|mut term| {
             evr_kbd
                 .read()
                 .filter(|ev| ev.state == ButtonState::Pressed)
                 .for_each(|ev| match &ev.logical_key {
                     Key::Enter => {
-                        let input_text = bakery_terminal.input_buffer.clone();
-                        bakery_terminal.history.push(input_text.clone());
-                        emit_command.send(Emitation(input_text));
-                        bakery_terminal.input_buffer.clear();
+                        let input_text = term.submit_input();
+                        emit_command.send(Emitation(input_text, term.id));
                     }
                     Key::Backspace => {
-                        bakery_terminal.input_buffer.pop();
+                        term.remove_last_input();
                     }
                     Key::Character(input) => {
                         if !input.chars().any(|c| c.is_control()) {
-                            bakery_terminal.input_buffer.push_str(input);
+                            term.add_input(input);
                         }
                     }
                     Key::Space => {
-                        bakery_terminal.input_buffer.push('_');
+                        term.add_input("_");
                     }
                     _ => {}
                 });
@@ -57,10 +65,24 @@ pub fn switch_section(
     let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
 
     if input.just_pressed(KeyCode::Tab) {
+        let increment = |section: &mut FocusedSection| {
+            section.increment();
+            if section.0 == 9 || section.0 == 11 {
+                section.increment();
+            }
+        };
+
+        let decrement = |section: &mut FocusedSection| {
+            section.decrement();
+            if section.0 == 9 || section.0 == 11 {
+                section.decrement();
+            }
+        };
+
         if shift {
-            focused_section.decrement();
+            decrement(&mut focused_section);
         } else {
-            focused_section.increment();
+            increment(&mut focused_section);
         }
     }
 
@@ -78,9 +100,8 @@ pub fn switch_section(
 }
 
 /// Update BakeryTerminal text content
-pub fn display(mut sections: Query<(&BakeryTerminal, &mut Text)>) {
-    sections.iter_mut().for_each(|(bakery_terminal, mut text)| {
-        text.0 =
-            bakery_terminal.history.join("\n") + &format!("\n> {}", bakery_terminal.input_buffer);
+pub fn presenter(mut sections: Query<(&BakeryTerminal, &mut Text)>) {
+    sections.iter_mut().for_each(|(term, mut text)| {
+        text.0 = term.history.join("\n") + &format!("\n> {}", term.input_buffer);
     });
 }

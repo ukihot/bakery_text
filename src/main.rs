@@ -1,17 +1,26 @@
 mod bt_components;
+mod bt_macros;
 mod bt_resources;
 mod bt_systems;
-
 use bevy::{prelude::*, window::WindowMode};
+use bt_resources::{financial_items::Wallet, market::Market, world_timer::WorldTimer};
 
 use crate::{
     bt_components::bakery_terminal::*,
     bt_resources::forcused_section::*,
     bt_systems::{
-        emit_commands::*,
         handle_inputs::*,
         install_systems::*,
+        market_fluctuations::*,
+        operate_baking::*,
+        operate_cooling::*,
+        operate_mixing::*,
+        operate_packaging::*,
         operate_purchasing::*,
+        operate_quality_control::*,
+        operate_shaping::*,
+        operate_stockroom::*,
+        operate_waste_station::*,
         power_systems::*,
     },
 };
@@ -35,17 +44,28 @@ fn main() {
         }))
         .init_state::<PausedState>()
         .add_event::<Emitation>()
-        .insert_resource(FocusedSection(0))
+        .insert_resource(FocusedSection::default())
+        .insert_resource(Wallet::default())
+        .insert_resource(Market::default())
+        .insert_resource(WorldTimer(Timer::from_seconds(3.0, TimerMode::Repeating)))
         .add_systems(Startup, (setup_camera, spawn_layout))
         .add_systems(
             Update,
             (
+                update_market_prices,
                 handle_text_input,
-                handle_commands,
-                display,
+                presenter,
                 handle_esc_key,
                 switch_section,
                 operate_purchasing,
+                operate_baking,
+                operate_mixing,
+                operate_cooling,
+                operate_packaging,
+                operate_quality_control,
+                operate_shaping,
+                operate_stockroom,
+                operate_waste_station,
             )
                 .run_if(in_state(PausedState::Running)),
         )

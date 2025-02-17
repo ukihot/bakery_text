@@ -14,6 +14,23 @@ pub struct BakeryTerminal {
     pub status: HealthStatus,
 }
 
+impl BakeryTerminal {
+    pub fn add_input(&mut self, input: &str) {
+        self.input_buffer.push_str(input);
+    }
+
+    pub fn remove_last_input(&mut self) {
+        self.input_buffer.pop();
+    }
+
+    pub fn submit_input(&mut self) -> String {
+        let input_text = self.input_buffer.clone();
+        self.history.push(input_text.clone());
+        self.input_buffer.clear();
+        input_text
+    }
+}
+
 #[derive(Debug, Default)]
 pub enum HealthStatus {
     #[default]

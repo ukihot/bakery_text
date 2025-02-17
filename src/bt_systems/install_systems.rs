@@ -5,11 +5,27 @@ use crate::bt_components::{
     sections::*,
 };
 
+const FONT_SIZE: f32 = 19.5;
+
 pub fn setup_camera(mut cmd: Commands) {
     cmd.spawn(Camera2d);
 }
 
-pub fn spawn_layout(mut cmd: Commands) {
+pub fn spawn_layout(mut cmd: Commands, asset_server: Res<AssetServer>) {
+    let font_teko = asset_server.load("fonts\\Teko\\Teko-Regular.ttf");
+    let icon_ps = asset_server.load("img\\icons\\ps.png");
+    let icon_pn = asset_server.load("img\\icons\\pn.png");
+    let icon_mx = asset_server.load("img\\icons\\mx.png");
+    let icon_cl = asset_server.load("img\\icons\\cl.png");
+    let icon_sh = asset_server.load("img\\icons\\sh.png");
+    let icon_bk = asset_server.load("img\\icons\\bk.png");
+    let icon_pk = asset_server.load("img\\icons\\pk.png");
+    let icon_qc = asset_server.load("img\\icons\\qc.png");
+    let icon_st = asset_server.load("img\\icons\\st.png");
+    let icon_sf = asset_server.load("img\\icons\\sf.png");
+    let icon_ws = asset_server.load("img\\icons\\ws.png");
+    let icon_ut = asset_server.load("img\\icons\\ut.png");
+
     cmd.spawn((
         Node {
             display: Display::Grid,
@@ -43,103 +59,122 @@ pub fn spawn_layout(mut cmd: Commands) {
                 add_section(
                     builder,
                     0,
-                    ORANGE,
                     None,
                     OperatorMode::Commander,
                     Purchasing,
+                    font_teko.clone(),
+                    icon_ps.clone(),
                 );
                 // Pantry
                 add_section(
                     builder,
                     1,
-                    BISQUE,
                     Some(Repository::new_raw_only()),
                     OperatorMode::default(),
                     Pantry,
+                    font_teko.clone(),
+                    icon_pn.clone(),
                 );
                 // Mixing
                 add_section(
                     builder,
                     2,
-                    CRIMSON,
                     Some(Repository::new_raw_with_dough()),
                     OperatorMode::default(),
                     Mixing,
+                    font_teko.clone(),
+                    icon_mx.clone(),
                 );
                 // Cooling
                 add_section(
                     builder,
                     3,
-                    AQUA,
                     Some(Repository::new_all()),
                     OperatorMode::default(),
                     Cooling,
+                    font_teko.clone(),
+                    icon_cl.clone(),
                 );
                 // Shaping
                 add_section(
                     builder,
                     4,
-                    ORANGE_RED,
                     Some(Repository::new_dough_with_bread()),
                     OperatorMode::default(),
                     Shaping,
+                    font_teko.clone(),
+                    icon_sh.clone(),
                 );
                 // Baking
                 add_section(
                     builder,
                     5,
-                    DARK_GREEN,
                     Some(Repository::new_bread_only()),
                     OperatorMode::default(),
                     Baking,
+                    font_teko.clone(),
+                    icon_bk.clone(),
                 );
                 // Packaging
                 add_section(
                     builder,
                     6,
-                    FUCHSIA,
                     Some(Repository::new_bread_only()),
                     OperatorMode::default(),
                     Packaging,
+                    font_teko.clone(),
+                    icon_pk.clone(),
                 );
                 // Quality Control
                 add_section(
                     builder,
                     7,
-                    TEAL,
                     Some(Repository::new_bread_only()),
                     OperatorMode::default(),
                     QualityControl,
+                    font_teko.clone(),
+                    icon_qc.clone(),
                 );
                 // Stockroom
                 add_section(
                     builder,
                     8,
-                    ALICE_BLUE,
                     Some(Repository::new_bread_only()),
                     OperatorMode::default(),
                     Stockroom,
+                    font_teko.clone(),
+                    icon_st.clone(),
                 );
                 // Sales Front
                 add_section(
                     builder,
                     9,
-                    CRIMSON,
                     Some(Repository::new_bread_only()),
                     OperatorMode::default(),
                     SalesFront,
+                    font_teko.clone(),
+                    icon_sf.clone(),
                 );
                 // Waste Station
                 add_section(
                     builder,
                     10,
-                    YELLOW_GREEN,
                     None,
                     OperatorMode::default(),
                     WasteStation,
+                    font_teko.clone(),
+                    icon_ws.clone(),
                 );
                 // Utility
-                add_section(builder, 11, SALMON, None, OperatorMode::default(), Utility);
+                add_section(
+                    builder,
+                    11,
+                    None,
+                    OperatorMode::default(),
+                    Utility,
+                    font_teko.clone(),
+                    icon_ut.clone(),
+                );
             });
 
         // Thread bar
@@ -185,39 +220,50 @@ pub fn spawn_layout(mut cmd: Commands) {
 fn add_section(
     builder: &mut ChildBuilder,
     section_id: u8,
-    color: Srgba,
     repository: Option<Repository>,
     operator_mode: OperatorMode,
     section: impl Component + Section,
+    font_teko: Handle<Font>,
+    icon: Handle<Image>,
 ) {
-    let terminal_text = "Purchasing Section Terminal";
-    let help_text = "Type 'ls' for cmd.".to_string();
+    let help_text = "Type 'help'".to_string();
 
     builder
         .spawn((
             Node {
-                display: Display::Grid,
-                overflow: Overflow::clip_x(),
+                display: Display::Flex,
+                flex_direction: FlexDirection::ColumnReverse,
+                overflow: Overflow::scroll(),
                 padding: UiRect::all(Val::Px(3.0)),
                 ..default()
             },
-            BackgroundColor(BLACK.into()),
+            ImageNode {
+                image: icon,
+                ..default()
+            },
+            BackgroundColor(Color::srgb_u8(210, 210, 210)),
+            BorderRadius::all(Val::Px(12.)),
         ))
         .with_children(|builder| {
             builder.spawn((
-                Node::DEFAULT,
-                BackgroundColor(color.into()),
+                BorderRadius::all(Val::Px(20.)),
+                Node {
+                    flex_grow: 1.0,
+                    ..default()
+                },
+                BackgroundColor(Color::srgba_u8(10, 10, 10, 110)),
                 Text::default(),
                 TextFont {
-                    font_size: 24.0,
-                    ..Default::default()
+                    font: font_teko.clone(),
+                    font_size: FONT_SIZE,
+                    ..default()
                 },
                 TextColor(Color::WHITE),
                 TextLayout::new(JustifyText::Left, LineBreak::AnyCharacter),
                 BakeryTerminal {
                     id: section_id,
                     input_buffer: String::new(),
-                    history: vec![terminal_text.to_string(), help_text.clone()],
+                    history: vec![help_text],
                     ..Default::default()
                 },
                 operator_mode,
