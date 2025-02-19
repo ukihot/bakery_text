@@ -1,10 +1,20 @@
 use bevy::prelude::*;
 
-#[derive(Resource, Default)]
+#[derive(Resource)]
 pub struct Wallet {
     pub cash: f64,
     pub receivables: f64,
     pub purchases: f64,
+}
+
+impl Default for Wallet {
+    fn default() -> Self {
+        Self {
+            cash: 10000.0,
+            receivables: 0.0,
+            purchases: 0.0,
+        }
+    }
 }
 
 impl Wallet {

@@ -25,3 +25,7 @@ pub(super) mod operate_stockroom;
 pub(super) mod operate_waste_station;
 
 pub(super) mod market_fluctuations;
+
+pub(super) mod play_gauge;
+
+pub(super) mod transport;

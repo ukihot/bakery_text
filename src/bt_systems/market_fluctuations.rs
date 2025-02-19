@@ -3,7 +3,7 @@ use rand::Rng;
 
 use crate::bt_resources::{
     market::{Ingredient, Market},
-    world_timer::WorldTimer,
+    timers::WorldTimer,
 };
 
 pub fn update_market_prices(

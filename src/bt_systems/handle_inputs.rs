@@ -6,20 +6,13 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{BakeryTerminal, FocusedSection, OperatorMode};
-
-#[derive(Event)]
-pub struct Emitation(pub String, pub u8);
-
-impl Emitation {
-    pub fn split_command(&self) -> (&str, Option<&str>, Option<&str>) {
-        let parts: Vec<&str> = self.0.split('_').collect();
-        let command = parts.first().unwrap_or(&"");
-        let opt1 = parts.get(1).copied();
-        let opt2 = parts.get(2).copied();
-        (command, opt1, opt2)
-    }
-}
+use crate::{
+    bt_events::emitation::Emitation,
+    BakeryTerminal,
+    FocusedSection,
+    OperatorMode,
+    PausedState,
+};
 
 /// Keyboard input handling (updates only the focused BakeryTerminal)
 pub fn handle_text_input(
@@ -61,7 +54,12 @@ pub fn switch_section(
     input: Res<ButtonInput<KeyCode>>,
     mut focused_section: ResMut<FocusedSection>,
     mut sections: Query<(&BakeryTerminal, &mut OperatorMode)>,
+    state: Res<State<PausedState>>,
 ) {
+    if *state.get() != PausedState::Running {
+        return;
+    }
+
     let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
 
     if input.just_pressed(KeyCode::Tab) {

@@ -1,10 +1,11 @@
+use std::time::Duration;
+
 use bevy::{color::palettes::css::*, prelude::*};
 
 use crate::bt_components::{
-    bakery_terminal::{BakeryTerminal, ModalComponet, OperatorMode, Repository},
+    bakery_terminal::{BakeryTerminal, Gauge, ModalComponet, OperatorMode, Repository},
     sections::*,
 };
-
 const FONT_SIZE: f32 = 19.5;
 
 pub fn setup_camera(mut cmd: Commands) {
@@ -265,6 +266,10 @@ fn add_section(
                     input_buffer: String::new(),
                     history: vec![help_text],
                     ..Default::default()
+                },
+                Gauge {
+                    progress: 0,
+                    timer: Timer::new(Duration::from_secs(1), TimerMode::Repeating),
                 },
                 operator_mode,
                 section,

@@ -1,12 +1,14 @@
 mod bt_components;
+mod bt_events;
 mod bt_macros;
 mod bt_resources;
 mod bt_systems;
 use bevy::{prelude::*, window::WindowMode};
-use bt_resources::{financial_items::Wallet, market::Market, world_timer::WorldTimer};
+use bt_resources::{financial_items::Wallet, market::Market, timers::WorldTimer};
 
 use crate::{
     bt_components::bakery_terminal::*,
+    bt_events::{emitation::Emitation, transportation::Transportation},
     bt_resources::forcused_section::*,
     bt_systems::{
         handle_inputs::*,
@@ -21,7 +23,9 @@ use crate::{
         operate_shaping::*,
         operate_stockroom::*,
         operate_waste_station::*,
+        play_gauge::*,
         power_systems::*,
+        transport::*,
     },
 };
 
@@ -44,6 +48,7 @@ fn main() {
         }))
         .init_state::<PausedState>()
         .add_event::<Emitation>()
+        .add_event::<Transportation>()
         .insert_resource(FocusedSection::default())
         .insert_resource(Wallet::default())
         .insert_resource(Market::default())
@@ -54,7 +59,6 @@ fn main() {
             (
                 update_market_prices,
                 handle_text_input,
-                presenter,
                 handle_esc_key,
                 switch_section,
                 operate_purchasing,
@@ -66,9 +70,12 @@ fn main() {
                 operate_shaping,
                 operate_stockroom,
                 operate_waste_station,
+                progress_gauge,
+                transport,
             )
-                .run_if(in_state(PausedState::Running)),
+                .run_if(not(in_state(PausedState::Paused))),
         )
+        .add_systems(PostUpdate, presenter)
         .add_systems(Update, ask_exit.run_if(in_state(PausedState::Paused)))
         .run();
 }

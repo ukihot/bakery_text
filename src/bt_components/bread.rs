@@ -1,7 +1,9 @@
+use std::cmp::PartialEq;
+
 use bevy::prelude::*;
 use uuid::Uuid;
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub enum BreadName {
     Baguette,
     Ciabatta,
@@ -9,7 +11,7 @@ pub enum BreadName {
     Koppe,
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 enum BreadStatus {
     Unfermented,
     FirstFermentationComplete,
@@ -21,7 +23,7 @@ enum BreadStatus {
     Spoiled,
 }
 
-#[derive(Debug, Component)]
+#[derive(Debug, Component, Clone)]
 pub struct Bread {
     pub id: Uuid,
     pub name: BreadName,
@@ -30,6 +32,14 @@ pub struct Bread {
     pub is_genuine: bool,
     pub status: BreadStatus,
 }
+
+impl PartialEq for Bread {
+    fn eq(&self, other: &Self) -> bool {
+        self.id == other.id
+    }
+}
+
+impl Eq for Bread {}
 
 impl Bread {
     pub fn new(name: BreadName) -> Self {

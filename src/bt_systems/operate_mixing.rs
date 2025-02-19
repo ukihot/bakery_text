@@ -6,7 +6,7 @@ use crate::{
         bakery_terminal::{BakeryTerminal, OperatorMode},
         sections::Mixing,
     },
-    bt_systems::handle_inputs::Emitation,
+    bt_events::emitation::Emitation,
     impl_from_str,
 };
 

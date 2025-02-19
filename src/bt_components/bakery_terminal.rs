@@ -1,3 +1,5 @@
+use std::ops::{Add, Sub};
+
 use bevy::prelude::*;
 
 use super::bread::Bread;
@@ -38,6 +40,18 @@ pub enum HealthStatus {
     Abnormal,
 }
 
+#[derive(Debug, Component)]
+pub struct Gauge {
+    pub progress: usize, // 残り時間
+    pub timer: Timer,
+}
+
+impl Gauge {
+    pub fn start_timer(&mut self, duration: f32) {
+        self.progress = duration as usize;
+    }
+}
+
 #[derive(Debug, Default, Component)]
 pub enum OperatorMode {
     #[default]
@@ -45,7 +59,7 @@ pub enum OperatorMode {
     Commander,
 }
 
-#[derive(Debug, Default, Component)]
+#[derive(Debug, Default, Component, Clone)]
 pub struct Repository {
     pub flour: Option<f32>,
     pub salt: Option<f32>,
@@ -114,6 +128,72 @@ impl Repository {
             yeast: None,
             dough: None,
             bread: Some(vec![]),
+        }
+    }
+}
+
+impl Add for Repository {
+    type Output = Self;
+
+    fn add(self, other: Self) -> Self {
+        Self {
+            flour: self.flour.zip(other.flour).map(|(a, b)| a + b),
+            salt: self.salt.zip(other.salt).map(|(a, b)| a + b),
+            sugar: self.sugar.zip(other.sugar).map(|(a, b)| a + b),
+            butter: self.butter.zip(other.butter).map(|(a, b)| a + b),
+            yeast: self.yeast.zip(other.yeast).map(|(a, b)| a + b),
+            dough: self.dough.zip(other.dough).map(|(a, b)| a + b),
+            bread: self.bread.zip(other.bread).map(|(a, b)| [a, b].concat()),
+        }
+    }
+}
+
+impl Sub for Repository {
+    type Output = Self;
+
+    fn sub(self, other: Self) -> Self {
+        Self {
+            flour: self.flour.zip(other.flour).map(|(a, b)| a - b),
+            salt: self.salt.zip(other.salt).map(|(a, b)| a - b),
+            sugar: self.sugar.zip(other.sugar).map(|(a, b)| a - b),
+            butter: self.butter.zip(other.butter).map(|(a, b)| a - b),
+            yeast: self.yeast.zip(other.yeast).map(|(a, b)| a - b),
+            dough: self.dough.zip(other.dough).map(|(a, b)| a - b),
+            bread: self.bread.zip(other.bread).map(|(a, b)| {
+                let mut result = a.clone();
+                for item in b {
+                    if let Some(pos) = result.iter().position(|x| *x == item) {
+                        result.remove(pos);
+                    }
+                }
+                result
+            }),
+        }
+    }
+}
+
+impl std::ops::AddAssign for Repository {
+    fn add_assign(&mut self, other: Self) {
+        if let Some(flour) = other.flour {
+            self.flour = Some(self.flour.unwrap_or(0.0) + flour);
+        }
+        if let Some(salt) = other.salt {
+            self.salt = Some(self.salt.unwrap_or(0.0) + salt);
+        }
+        if let Some(sugar) = other.sugar {
+            self.sugar = Some(self.sugar.unwrap_or(0.0) + sugar);
+        }
+        if let Some(butter) = other.butter {
+            self.butter = Some(self.butter.unwrap_or(0.0) + butter);
+        }
+        if let Some(yeast) = other.yeast {
+            self.yeast = Some(self.yeast.unwrap_or(0.0) + yeast);
+        }
+        if let Some(dough) = other.dough {
+            self.dough = Some(self.dough.unwrap_or(0.0) + dough);
+        }
+        if let Some(bread) = other.bread {
+            self.bread = Some([self.bread.take().unwrap_or_default(), bread].concat());
         }
     }
 }
