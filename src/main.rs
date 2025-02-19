@@ -30,6 +30,7 @@ pub enum PausedState {
     #[default]
     Running,
     Paused,
+    Freeze,
 }
 
 fn main() {
@@ -67,7 +68,7 @@ fn main() {
                 operate_stockroom,
                 operate_waste_station,
             )
-                .run_if(in_state(PausedState::Running)),
+                .run_if(not(in_state(PausedState::Paused))),
         )
         .add_systems(Update, ask_exit.run_if(in_state(PausedState::Paused)))
         .run();

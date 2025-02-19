@@ -6,7 +6,7 @@ use bevy::{
     prelude::*,
 };
 
-use crate::{BakeryTerminal, FocusedSection, OperatorMode};
+use crate::{BakeryTerminal, FocusedSection, OperatorMode, PausedState};
 
 #[derive(Event)]
 pub struct Emitation(pub String, pub u8);
@@ -61,7 +61,12 @@ pub fn switch_section(
     input: Res<ButtonInput<KeyCode>>,
     mut focused_section: ResMut<FocusedSection>,
     mut sections: Query<(&BakeryTerminal, &mut OperatorMode)>,
+    state: Res<State<PausedState>>,
 ) {
+    if *state.get() != PausedState::Running {
+        return;
+    }
+
     let shift = input.any_pressed([KeyCode::ShiftLeft, KeyCode::ShiftRight]);
 
     if input.just_pressed(KeyCode::Tab) {

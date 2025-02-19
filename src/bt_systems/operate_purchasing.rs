@@ -121,6 +121,14 @@ fn exec_order_pc(
         return Err(());
     }
 
+    // 購入した原料がpantryのリポジトリへ補充されるeventを発出
+
+    // stateをフリーズに変更
+
+    // x秒間 |(パイプ文字) が1秒に4文字ずつadd_input(ゲージ演出)
+
+    // state をRunningに変更
+
     terminal.add_input(&format!(
         "Order command executed: {:?} x{} for {:.2} cash.",
         ingredient, quantity, cost
